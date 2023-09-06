@@ -5,21 +5,30 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D),typeof(TouchingDirection))]
 public class PlayerController : MonoBehaviour
 {
+    Vector2 moveInput;
     public float walkSpeed = 5f;
     public float runSpeed = 8f;
-
+    public float airWalkSpeed = 3f;
+    public float jumpImpulse = 10f;
+    TouchingDirection touchingDirection;
     public float currentMoveSpeed{ get
-        { 
-            if (IsMoving)
+        {
+            if (IsMoving && !touchingDirection.IsOnWall)
             {
-                if (IsRunning)
-                { return runSpeed; }
+                if (touchingDirection.IsGrounded)
+                {
+                    if (IsRunning)
+                    { return runSpeed; }
+                    else
+                    { return walkSpeed; }
+                }
                 else
-                { return walkSpeed; }
-
+                {
+                    return airWalkSpeed;
+                }
             } 
             else
             {
@@ -27,7 +36,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    Vector2 moveInput;
+    
     [SerializeField]
     private bool _isMoving = false;
     public bool IsMoving { get 
@@ -70,11 +79,13 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D rb;
     Animator animator;
+    
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        touchingDirection = GetComponent<TouchingDirection>();
     }
 
     // Start is called before the first frame update
@@ -92,6 +103,8 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         rb.velocity = new Vector2(moveInput.x * currentMoveSpeed, rb.velocity.y);
+
+        animator.SetFloat(AnimationStrings.yVelocity, rb.velocity.y);
     }
 
     void OnAttack()
@@ -127,6 +140,15 @@ public class PlayerController : MonoBehaviour
             IsRunning = true;
         } else if(context.canceled){
             IsRunning = false;
+        }
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if(context.started && touchingDirection.IsGrounded)
+        {
+            animator.SetTrigger(AnimationStrings.jump);
+            rb.velocity = new Vector2(rb.velocity.x, jumpImpulse);
         }
     }
 }
