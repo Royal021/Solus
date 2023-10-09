@@ -16,24 +16,28 @@ public class PlayerController : MonoBehaviour
     TouchingDirection touchingDirection;
     public float currentMoveSpeed{ get
         {
-            if (IsMoving && !touchingDirection.IsOnWall)
+            if (CanMove)
             {
-                if (touchingDirection.IsGrounded)
+                if (IsMoving && !touchingDirection.IsOnWall)
                 {
-                    if (IsRunning)
-                    { return runSpeed; }
+                    if (touchingDirection.IsGrounded)
+                    {
+                        if (IsRunning)
+                        { return runSpeed; }
+                        else
+                        { return walkSpeed; }
+                    }
                     else
-                    { return walkSpeed; }
+                    {
+                        return airWalkSpeed;
+                    }
                 }
                 else
                 {
-                    return airWalkSpeed;
+                    return 0f;
                 }
-            } 
-            else
-            {
-                return 0f;
             }
+            else { return 0f; }
         }
     }
     
@@ -80,6 +84,11 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
     
+    public bool CanMove { get
+        {
+            return animator.GetBool(AnimationStrings.canMove);
+        }
+    }
 
     private void Awake()
     {
@@ -145,10 +154,18 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if(context.started && touchingDirection.IsGrounded)
+        if(context.started && touchingDirection.IsGrounded && CanMove)
         {
-            animator.SetTrigger(AnimationStrings.jump);
+            animator.SetTrigger(AnimationStrings.jumpTrigger);
             rb.velocity = new Vector2(rb.velocity.x, jumpImpulse);
+        }
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if(context.started)
+        {
+            animator.SetTrigger(AnimationStrings.attackTrigger);
         }
     }
 }
