@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7083825027592919078}
   - component: {fileID: 2529958169266103256}
   - component: {fileID: 6671711608695963274}
+  - component: {fileID: 1284473230702457386}
   m_Layer: 8
   m_Name: KnightEnemy
   m_TagString: Untagged
@@ -164,7 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c015f41f1285994d9822f8c0b67d4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 3
+  walkSpeed: 7.6
+  walkStopRate: 0.05
+  attackZone: {fileID: 6592470081316397678}
+  _hasTarget: 0
 --- !u!114 &2529958169266103256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,6 +222,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1284473230702457386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575759084090525642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d08a37d79100b499e394b13a05c5df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHealth: 100
 --- !u!1 &3842905185387863648
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,8 +245,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6940891934196209504}
   - component: {fileID: 748768090727902177}
+  - component: {fileID: 6592470081316397678}
   m_Layer: 10
-  m_Name: GameObject
+  m_Name: DetectionZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295,3 +313,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5.07835, y: 2.4762123}
   m_EdgeRadius: 0
+--- !u!114 &6592470081316397678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3842905185387863648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56d3186d9292a284097501223e50ae73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectedColliders: []
