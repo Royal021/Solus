@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(TouchingDirection))]
+[RequireComponent(typeof(Rigidbody2D), typeof(TouchingDirection), typeof(TakeDamage))]
 public class Knight : MonoBehaviour
 {
 
@@ -15,8 +15,9 @@ public class Knight : MonoBehaviour
     Rigidbody2D rb;
     TouchingDirection touchingDirection;
     Animator animator;
+    TakeDamage takeDamage;
 
-    public enum WalkableDirection { Left, Right }
+    public enum WalkableDirection { Right, Left }
 
     private WalkableDirection _walkDirection;
     private Vector2 walkDirectionVector = Vector2.right;
@@ -25,7 +26,7 @@ public class Knight : MonoBehaviour
     {
         get { return _walkDirection; }
         set {
-            if (_walkDirection == value)
+            if (_walkDirection != value)
             {
                 gameObject.transform.localScale = new Vector2(gameObject.transform.localScale.x * -1, gameObject.transform.localScale.y);
 
@@ -61,6 +62,7 @@ public class Knight : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         touchingDirection = GetComponent<TouchingDirection>();
         animator = GetComponent<Animator>();
+        takeDamage = GetComponent<TakeDamage>();
     }
 
     // Update is called once per frame
@@ -75,13 +77,16 @@ public class Knight : MonoBehaviour
         {
             FlipDirection();
         }
-        if (canMove)
+        if (!takeDamage.LockVelocity)
         {
-            rb.velocity = new Vector2(walkSpeed * walkDirectionVector.x, rb.velocity.y);
-        }
-        else
-        {
-            rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x,0, walkStopRate), rb.velocity.y);
+            if (canMove)
+            {
+                rb.velocity = new Vector2(walkSpeed * walkDirectionVector.x, rb.velocity.y);
+            }
+            else
+            {
+                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, 0, walkStopRate), rb.velocity.y);
+            }
         }
     }
 
@@ -90,7 +95,8 @@ public class Knight : MonoBehaviour
         if(walkDirection== WalkableDirection.Right)
         {
             walkDirection = WalkableDirection.Left;
-        }else if(walkDirection == WalkableDirection.Left)
+        }
+        else if(walkDirection == WalkableDirection.Left)
         {  
             walkDirection = WalkableDirection.Right;
         }
@@ -100,11 +106,9 @@ public class Knight : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+ 
+    public void OnHit(int damage, Vector2 knockback)
     {
-       
+        rb.velocity = new Vector2(knockback.x, knockback.y + rb.velocity.y);
     }
-
-
 }
