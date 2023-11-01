@@ -10,6 +10,7 @@ public class Knight : MonoBehaviour
     public float walkSpeed = 3f;
     public float walkStopRate = 0.05f;
     public detectionZone attackZone;
+    public detectionZone edgeDetectionZone;
 
 
     Rigidbody2D rb;
@@ -57,6 +58,17 @@ public class Knight : MonoBehaviour
             return animator.GetBool(AnimationStrings.canMove);
         }
     }
+
+    public float AttackCoolDown { get
+        {
+            return animator.GetFloat(AnimationStrings.attackCooldown);
+        }  private set
+        {
+            animator.SetFloat(AnimationStrings.attackCooldown, Mathf.Max(value, 0));
+        }
+
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -69,6 +81,11 @@ public class Knight : MonoBehaviour
     void Update()
     {
         HasTarget = attackZone.detectedColliders.Count > 0;
+
+        if (AttackCoolDown > 0)
+        {
+            AttackCoolDown -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -110,5 +127,13 @@ public class Knight : MonoBehaviour
     public void OnHit(int damage, Vector2 knockback)
     {
         rb.velocity = new Vector2(knockback.x, knockback.y + rb.velocity.y);
+    }
+
+    public void OnEdgeDetected()
+    {
+        if (touchingDirection.IsGrounded)
+        {
+            FlipDirection();
+        }
     }
 }

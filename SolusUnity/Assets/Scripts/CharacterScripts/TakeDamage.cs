@@ -113,6 +113,8 @@ public class TakeDamage : MonoBehaviour
            animator.SetTrigger(AnimationStrings.hitTrigger);
             LockVelocity = true;
             dHit?.Invoke(damage, knockback);
+            CharacterEvents.charDamaged.Invoke(gameObject, damage);
+
             return true;
         }
         //unable to be hit

@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class detectionZone : MonoBehaviour
 {
+
+    public UnityEvent NoCollidersDetected;
+
     public List<Collider2D> detectedColliders = new List<Collider2D>();
     Collider2D col;
 
@@ -21,5 +25,9 @@ public class detectionZone : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         detectedColliders.Remove(collision);
+        if(detectedColliders.Count <=0)
+        {
+            NoCollidersDetected.Invoke();
+        }
     }
 }
